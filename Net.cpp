@@ -1,7 +1,8 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <cmath>
 
 using namespace std;;
 
@@ -41,13 +42,40 @@ string read(int line) {
     ifstream Log;
         Log.open("Logs.txt");
 
-    for (int i = 0; i < line; i++) {
+    for (int i = 0; i < line or !Log.eof(); i++) {
         Log >> out;
     }
+
+    if (Log.eof()) return "";
 
     Log.close();
 
     return out;
+}
+int allPayments(int input, int a, int b) {
+    int i = 1;
+    int sumIndustry = 0;
+
+    while (read(i) != "") {
+        if (read(i) == "payment") {
+            if (read(i + 1) == to_string(input)) {
+                if (read(i + 3) == to_string(a)) {
+                    if (read(i + 4) == to_string(b)) {
+                        sumIndustry += stoi(read(i + 2));
+                    }
+                    else i += 5;
+                }
+                else i += 5;
+            }
+            else i += 5;
+        }
+        else i += 5;
+    }
+    return sumIndustry;
+}
+
+float prcnt(int a, int b) {
+    return ((float)b / (float)a) * 100.00;
 }
 
 Balance balances[2]{ *new Balance(0, 1000), *new Balance(1, 500) };
@@ -120,6 +148,8 @@ int main()
             cout << "how many?\n";
             cin >> money;
 
+            balances[input - 1].balance -= money;
+
             write("payment");
             write(to_string(input));
             write(to_string(money));
@@ -127,13 +157,31 @@ int main()
             write(to_string(1 + ltm->tm_mon));
 
             break;
-        case(4):
+        case(4): //платежи за последний месяц
             for (int i = 0; i < 2; i++) {
                 cout << "Balance #" << i + 1 << " money: " << balances[i].balance << "\n";
             }
 
             cout << "choose balance\n";
             cin >> input;
+
+            int a;
+            int b;
+
+            cout << "number of mounth?\n";
+            cin >> b;
+
+            int allFood = allPayments(input, 1, b);
+            int allReceipts = allPayments(input, 2, b);
+            int allOther = allPayments(input, 3, b);
+            int allStudy = allPayments(input, 4, b);
+
+            int sumPayments = allFood + allReceipts + allOther + allStudy;
+
+            cout << "2 " << category[1].name << " - " << round(prcnt(sumPayments, allFood) * 100) / 100 << "%" << "\n";
+            cout << "2 " << category[1].name << " - " << round(prcnt(sumPayments, allReceipts) * 100) / 100 << "%" << "\n";
+            cout << "3 " << category[2].name << " - " << round(prcnt(sumPayments, allOther) * 100) / 100 << "%" << "\n";
+            cout << "4 " << category[3].name << " - " << round(prcnt(sumPayments, allStudy) * 100) / 100 << "%" <<"\n";
 
             break;
         }
