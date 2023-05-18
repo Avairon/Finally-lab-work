@@ -42,7 +42,7 @@ string read(int line) {
     ifstream Log;
         Log.open("Logs.txt");
 
-    for (int i = 0; i < line or !Log.eof(); i++) {
+    for (int i = 0; i < line; i++) {
         Log >> out;
     }
 
@@ -52,20 +52,31 @@ string read(int line) {
 
     return out;
 }
-int allPayments(int input, int a, int b) {
+int allPaymentsFM(int input, int a, int b) {
     int i = 1;
     int sumIndustry = 0;
 
     while (read(i) != "") {
         if (read(i) == "payment") {
-            if (read(i + 1) == to_string(input)) {
-                if (read(i + 3) == to_string(a)) {
-                    if (read(i + 4) == to_string(b)) {
-                        sumIndustry += stoi(read(i + 2));
-                    }
-                    else i += 5;
-                }
-                else i += 5;
+            if (read(i + 1) == to_string(input) && read(i + 3) == to_string(a) && read(i + 4) == to_string(b)) {
+                sumIndustry += stoi(read(i + 2));
+                i += 5;
+            }
+            else i += 5;
+        }
+        else i += 5;
+    }
+    return sumIndustry;
+}
+int allPayments(int input, int a) {
+    int i = 1;
+    int sumIndustry = 0;
+
+    while (read(i) != "") {
+        if (read(i) == "payment") {
+            if (read(i + 1) == to_string(input) && read(i + 3) == to_string(a)) {
+                sumIndustry += stoi(read(i + 2));
+                i += 5;
             }
             else i += 5;
         }
@@ -171,17 +182,31 @@ int main()
             cout << "number of mounth?\n";
             cin >> b;
 
-            int allFood = allPayments(input, 1, b);
-            int allReceipts = allPayments(input, 2, b);
-            int allOther = allPayments(input, 3, b);
-            int allStudy = allPayments(input, 4, b);
+            int allFood = allPaymentsFM(input, 1, b); // map ключ - значение
+            int allReceipts = allPaymentsFM(input, 2, b);
+            int allOther = allPaymentsFM(input, 3, b);
+            int allStudy = allPaymentsFM(input, 4, b);
 
             int sumPayments = allFood + allReceipts + allOther + allStudy;
 
-            cout << "2 " << category[1].name << " - " << round(prcnt(sumPayments, allFood) * 100) / 100 << "%" << "\n";
+            cout << "\npayments for mount\n";
+            cout << "1 " << category[0].name << " - " << round(prcnt(sumPayments, allFood) * 100) / 100 << "%" << "\n";
             cout << "2 " << category[1].name << " - " << round(prcnt(sumPayments, allReceipts) * 100) / 100 << "%" << "\n";
             cout << "3 " << category[2].name << " - " << round(prcnt(sumPayments, allOther) * 100) / 100 << "%" << "\n";
             cout << "4 " << category[3].name << " - " << round(prcnt(sumPayments, allStudy) * 100) / 100 << "%" <<"\n";
+
+            allFood = allPaymentsFM(input, 1, b);
+            allReceipts = allPaymentsFM(input, 2, b);
+            allOther = allPaymentsFM(input, 3, b);
+            allStudy = allPaymentsFM(input, 4, b);
+
+            sumPayments = allFood + allReceipts + allOther + allStudy;
+
+            cout << "\npayments for all time\n";
+            cout << "1 " << category[0].name << " - " << round(prcnt(sumPayments, allFood) * 100) / 100 << "%" << "\n";
+            cout << "2 " << category[1].name << " - " << round(prcnt(sumPayments, allReceipts) * 100) / 100 << "%" << "\n";
+            cout << "3 " << category[2].name << " - " << round(prcnt(sumPayments, allOther) * 100) / 100 << "%" << "\n";
+            cout << "4 " << category[3].name << " - " << round(prcnt(sumPayments, allStudy) * 100) / 100 << "%" << "\n";
 
             break;
         }
